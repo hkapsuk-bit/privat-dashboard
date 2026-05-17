@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏠 Privat Dashboard — 2026-05-17</title>
+<style>
+:root{--bg:#080d08;--surface:#0e150e;--surface2:#151f15;--panel:#0a100a;--border:#233023;--border2:#3a523a;--text:#ecffec;--muted:#7a9a7a;--accent:#4caf50;--green:#10b981;--yellow:#ffbf3f;--red:#ff4466;--blue:#60c5fa;--purple:#a78bfa;--cyan:#67e8f9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;min-height:100vh}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 36px;width:min(380px,90vw)}
+.login-box h1{font-family:ui-sans-serif,system-ui;font-size:28px;font-weight:900;color:#f0fff0;margin-bottom:6px}
+.login-box .sub{color:var(--muted);font-size:12px;margin-bottom:28px}
+.login-field{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+.login-field:focus{border-color:var(--accent)}
+.login-btn{width:100%;background:var(--accent);border:none;color:#fff;border-radius:10px;padding:13px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.login-btn:hover{background:#43a047}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;min-height:18px}
+#app{display:none}
+header{padding:24px 18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(76,175,80,.08),transparent)}
+.brand h1{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(34px,9vw,76px);line-height:.95;font-weight:900;letter-spacing:-.06em;color:#f0fff0}
+.sub{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5}.pill{display:inline-block;border:1px solid var(--border2);border-radius:999px;padding:4px 10px;margin:4px 4px 0 0;color:#cacae8;background:rgba(255,255,255,.03)}.pill.green{border-color:rgba(16,185,129,.45);color:#9af0cd;background:rgba(16,185,129,.08)}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(80px,1fr));gap:14px;margin-top:26px;max-width:760px}.stat .num{font-size:36px;font-weight:900}.stat .lab{color:var(--muted);text-transform:uppercase;letter-spacing:.22em;font-size:11px;margin-top:3px}.stat .num.green{color:var(--green)}.stat .num.red{color:var(--red)}.stat .num.blue{color:var(--blue)}.stat .num.yellow{color:var(--yellow)}.stat .num.accent{color:var(--accent)}
+.rule{border-top:1px solid rgba(76,175,80,.28);border-bottom:1px solid rgba(76,175,80,.12);padding:18px;margin:0;background:rgba(76,175,80,.045);color:#b9f6d8;line-height:1.65;font-size:14px}.rule b{color:#eafff4}
+.controls{padding:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border)}button,.btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:10px 14px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;min-height:40px}button:hover,.btn:hover{border-color:var(--border2);color:var(--text)}button.active{background:var(--accent);border-color:var(--accent);color:#fff}.btn.good{border-color:rgba(16,185,129,.55);color:#9af0cd}.btn.warn{border-color:rgba(255,191,63,.55);color:#ffd98a}.sep{width:1px;background:var(--border);align-self:stretch;margin:0 4px}.search{flex:1 1 320px;min-width:260px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;padding:12px 14px;outline:none}.search:focus{border-color:var(--accent)}
+#status{padding:10px 18px;color:var(--muted);border-bottom:1px solid var(--border);display:none}#status.on{display:block}.grid{padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:12px}.empty{grid-column:1/-1;padding:48px 12px;color:var(--muted);text-align:center;border:1px dashed var(--border);border-radius:14px;background:rgba(255,255,255,.02)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative}.card.changed{border-color:var(--accent)}.card.done{opacity:.45}.stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--border2)}.p1 .stripe{background:var(--red)}.p2 .stripe{background:var(--yellow)}.p3 .stripe{background:var(--green)}.p4 .stripe{background:var(--muted)}.card-main{padding:14px 14px 12px 18px}.row{display:flex;gap:10px;align-items:flex-start}.cb{width:20px;height:20px;flex:0 0 20px;margin-top:2px;accent-color:var(--green)}.prio{font-size:11px;border-radius:6px;padding:4px 7px;white-space:nowrap}.p1 .prio{background:rgba(255,68,102,.14);color:#ff9aac}.p2 .prio{background:rgba(255,191,63,.14);color:#ffdb90}.p3 .prio{background:rgba(16,185,129,.14);color:#95f0cf}.p4 .prio{background:rgba(132,132,164,.12);color:#babaCF}.title{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:700;font-size:15px;line-height:1.35;flex:1}.done .title{text-decoration:line-through;color:var(--muted)}.mark{color:var(--accent);font-size:12px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;padding:4px 7px;border-radius:6px;background:rgba(255,255,255,.05);color:#bdbde1}.chip.red{background:rgba(255,68,102,.12);color:#ffa0b1}.chip.yellow{background:rgba(255,191,63,.12);color:#ffdd98}.chip.green{background:rgba(16,185,129,.12);color:#93f0cc}.chip.blue{background:rgba(96,165,250,.12);color:#aad2ff}.chip.purple{background:rgba(167,139,250,.12);color:#cebfff}.chip.muted{color:var(--muted)}.chip.lime{background:rgba(76,175,80,.12);color:#b9f6c8}.idline{margin-top:10px;color:var(--muted);font-size:11px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mini{font-size:11px;min-height:28px;padding:5px 8px;border-radius:7px}.actions{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap}.panel{display:none;background:var(--surface2);border-top:1px solid var(--border);padding:14px}.card.open .panel{display:block}.section{margin-bottom:14px}.section:last-child{margin-bottom:0}.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.16em;margin-bottom:7px}.desc{white-space:pre-wrap;line-height:1.65;color:#c8c8e8;max-height:240px;overflow:auto;background:rgba(0,0,0,.18);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.04);word-break:break-word}.desc a{color:#9ef0cc}.editrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.field,select.field{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:9px 10px;font-family:inherit;outline:none}.field:focus,.textarea:focus{border-color:var(--accent)}.field.mod,.textarea.mod{border-color:var(--accent)}.textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;padding:11px;min-height:96px;resize:vertical;line-height:1.55;outline:none}.mode.active.descmode{background:rgba(76,175,80,.15);border-color:var(--accent);color:#c9ffc5}.mode.active.labelmode{background:rgba(16,185,129,.12);border-color:var(--green);color:#9af0cd}.mode.active.miscmode{background:rgba(255,191,63,.12);border-color:var(--yellow);color:#ffdc91}.hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;align-items:center;justify-content:center;padding:16px}.overlay.on{display:flex}.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:min(960px,100%);max-height:88vh;display:flex;flex-direction:column;overflow:hidden}.modal.small{width:min(680px,100%)}.mh{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.mh h2{font-family:ui-sans-serif,system-ui;font-size:19px}.x{background:none;border:none;font-size:24px;color:var(--muted);padding:2px 8px;min-height:auto}.mbody{padding:16px;overflow:auto}.mfoot{padding:13px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.bigta{width:100%;min-height:340px;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:13px;font-family:inherit;line-height:1.55;resize:vertical}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}.block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px}.block.full{grid-column:1/-1}.okflash{color:var(--green)!important;border-color:var(--green)!important}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr;padding:12px}.controls{padding:12px}.brand h1{font-size:48px}.rule{font-size:13px}.search{min-width:100%}button,.btn{font-size:12px;padding:9px 11px}}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-box">
+    <h1>🏠 Privat</h1>
+    <div class="sub">Dashboard — Bitte anmelden</div>
+    <input id="login-user" class="login-field" type="text" placeholder="Benutzername" autocomplete="username">
+    <input id="login-pass" class="login-field" type="password" placeholder="Passwort" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">Anmelden</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+<div id="app">
+<header>
+  <div class="brand"><h1>🏠 Privat</h1></div>
+  <div class="sub">Dashboard · Snapshot 2026-05-17 <span class="pill green">63 Tasks geladen</span><span class="pill">Alle Unterprojekte</span></div>
+  <div class="stats">
+    <div class="stat"><div class="num green" id="st-open">—</div><div class="lab">Offen</div></div>
+    <div class="stat"><div class="num red" id="st-overdue">—</div><div class="lab">Überfällig</div></div>
+    <div class="stat"><div class="num yellow" id="st-today">—</div><div class="lab">Heute</div></div>
+    <div class="stat"><div class="num red" id="st-p1">—</div><div class="lab">P1</div></div>
+    <div class="stat"><div class="num accent" id="st-changed">0</div><div class="lab">Änderungen</div></div>
+  </div>
+</header>
+<div class="rule"><b>Regel:</b> Alles was besprochen, entschieden oder recherchiert wird, gehört in die <b>Beschreibung</b> — nie in Kommentare. Kommentare erscheinen nicht im JSON-Export und sind im Dashboard unsichtbar. Beschreibung = einziger verbindlicher Kontextort.</div>
+<div class="controls">
+  <button data-filter="all" class="active">Alle</button>
+  <button data-filter="overdue">Überfällig</button>
+  <button data-filter="today">Heute</button>
+  <button data-filter="p1">P1</button>
+  <button data-filter="p12">P1–P2</button>
+  <button data-filter="wait">Warten auf</button>
+  <button data-filter="zuhause">@Zuhause</button>
+  <button data-filter="walken">@Walken</button>
+  <button data-filter="sibel">@Sibel</button>
+  <button data-filter="keyhan">@Keyhan</button>
+  <button data-filter="baumarkt">@Baumarkt</button>
+  <button data-filter="anywhere">@Anywhere</button>
+  <button data-filter="garage">Garage</button>
+  <button data-filter="garten">Garten</button>
+  <button data-filter="changed">Geändert</button>
+  <span class="sep"></span>
+  <button id="hide-done" class="btn good">✓ Erledigte ausblenden</button>
+  <button id="refresh-btn" class="btn good">🔄 Aktualisieren</button>
+  <button id="token-btn">🔑 Token</button>
+  <button id="sync-btn" class="btn warn">📋 Sync</button>
+  <button id="data-btn">⇅ Daten</button>
+  <input id="search" class="search" placeholder="Suche: Titel, Projekt, Label, Beschreibung…">
+</div>
+<div id="status"></div>
+<main id="grid" class="grid"></main>
+
+<div id="token-overlay" class="overlay"><div class="modal small"><div class="mh"><h2>🔑 Todoist API-Token</h2><button class="x" data-close="token-overlay">×</button></div><div class="mbody"><div style="color:var(--muted);font-size:12px;margin-bottom:12px;line-height:1.6">Token wird nur lokal in deinem Browser gespeichert (localStorage). Nie in der Datei selbst.<br>Zu finden unter: <b>Todoist → Einstellungen → Integrationen → API-Token</b></div><input id="token-input" type="password" class="field" style="width:100%;font-size:13px" placeholder="API-Token hier einfügen…"><div id="token-status" style="margin-top:8px;font-size:11px;color:var(--muted)"></div></div><div class="mfoot"><button data-close="token-overlay">Abbrechen</button><button id="token-clear" class="btn warn">Token löschen</button><button id="token-save" class="btn good">Speichern</button></div></div></div>
+<div id="refresh-overlay" class="overlay"><div class="modal small"><div class="mh"><h2>🔄 Aktualisieren</h2><button class="x" data-close="refresh-overlay">×</button></div><div class="mbody"><div id="refresh-log" style="font-family:monospace;font-size:12px;color:var(--text);line-height:1.8;min-height:60px"></div><div id="refresh-dropzone" style="display:none;margin-top:12px;border:2px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;color:var(--muted);font-size:12px" ondragover="event.preventDefault()" ondrop="event.preventDefault();loadRefreshFile(event.dataTransfer.files[0])">JSON hier ablegen<br><br><input type="file" id="refresh-file" accept=".json" style="color:var(--text)"></div></div><div class="mfoot"><button data-close="refresh-overlay" id="refresh-close">Schließen</button></div></div></div>
+<div id="sync-overlay" class="overlay"><div class="modal"><div class="mh"><h2>Sync-Paket</h2><button class="x" data-close="sync-overlay">×</button></div><div class="mbody"><textarea id="sync-text" class="bigta" readonly></textarea></div><div class="mfoot"><button data-close="sync-overlay">Schließen</button><button id="copy-sync" class="btn good">Alles kopieren</button></div></div></div>
+<div id="data-overlay" class="overlay"><div class="modal"><div class="mh"><h2>Daten — Export / Import</h2><button class="x" data-close="data-overlay">×</button></div><div class="mbody"><input type="file" id="file-import" accept=".json,application/json" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;width:100%;margin-bottom:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:8px">Akzeptiert: Todoist-Backup-JSON (items/projects) <b>oder</b> Dashboard-Export-JSON (tasks). Privat-Tasks werden automatisch herausgefiltert.</div><textarea id="data-text" class="bigta" placeholder="JSON hier einfügen — oder Datei oben auswählen…"></textarea></div><div class="mfoot"><button id="reset-all" class="btn warn">Zurücksetzen</button><button id="show-json">JSON anzeigen</button><button id="download-json">Datei speichern</button><button id="import-json" class="btn good">Import</button></div></div></div>
+
+</div>
+<script id="tasks-json" type="application/json">[{"id": "6gcMQVP4X8cG4q9g", "p": "p4", "t": "Heizung – Sensor Schatten Einstellung", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQRf5MqGhmHgg", "p": "p4", "t": "[Sous vide]", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWXgJv6J8jG8", "p": "p4", "t": "Kellertür Wasser prüfen — mit Sibel besprechen wie vorgehen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Sibel", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Akustikpanelen stehen vor der Kellertür — schwer zugänglich. Mit Sibel klären wie wir da rangehen und sauber machen können.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMfJPP4F8cgwqg", "p": "p4", "t": "Nietzold Einlagen — auf Antwort warten", "due": "2026-05-20", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 15.05.2026: E-Mail gesendet mit Fragen zur GKV-Karte und Rezeptweiterleitung. Warten auf Antwort.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQW68MjQh4GF8", "p": "p4", "t": "Insta Rezepte pflegen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "30m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQX2qmrf6VpMg", "p": "p4", "t": "Verlängerungskabel mit Überspannungsschutz kaufen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQX6qQ28v9Qqg", "p": "p4", "t": "Ninja Creami — Rezepte recherchieren und vorbereiten", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "30m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMf23w5pwhqVj8", "p": "p4", "t": "Review: Todoist auch für Arbeit nutzen?", "due": "2026-05-31", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMhHrfWJG58wQ8", "p": "p1", "t": "Rechtsanwalt Dermatologie vorbereiten", "due": "2026-05-20", "time": "", "deadline": "2026-05-26", "lb": ["Privat", "Sibel"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Termin beim Anwalt: 26.05.2026. Argumentationslinie + Unterlagen. Beschwerden konservativ behandelt, Ursache blieb bestehen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "30m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQVr2MmfWg8m8", "p": "p4", "t": "Sibel Procrastinieren — beim Walken reflektieren und strukturieren", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat", "Sibel"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Thema: Sibel beim Überwinden von Prokrastination unterstützen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWmPW7CffGxg", "p": "p2", "t": "Pflegeservice Mama organisieren", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Abla", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "15m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWr2HV6QjwPg", "p": "p4", "t": "Sohn Essverhalten unterstützen — beim Walken reflektieren", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat", "Walken"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Thema: Sohn beim gesunden Essverhalten unterstützen.\nhttps://chatgpt.com/c/676dd701-bae0-800b-8a3f-7ef3d3fbedaa", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWvWHPG749hg", "p": "p3", "t": "Ruhrpoccard Ausflüge planen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "20m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQX6vCFXPxV38", "p": "p4", "t": "Zuhause Regeln — beim Walken reflektieren und strukturieren", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat", "Walken"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "https://chatgpt.com/c/6a05d497-2e70-83eb-a168-7f12a9a24b1f", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWWCR8qFwC9g", "p": "p4", "t": "Wassersprüher für die Katzen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMcqPpR63cV2q8", "p": "p4", "t": "Todoist Abo bewerten — weiter, kündigen oder Jahresabo?", "due": "2026-05-31", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQWWJfW3wMQMg", "p": "p4", "t": "Keyhan Kalender – Sibels Google Account einrichten", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Keyhan", "Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMRX8rm8GvFrCg", "p": "p2", "t": "Gewerbe – Nächster Schritt Kleinanzeigen Seminare", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "ChatGPT-Kontext: https://chatgpt.com/c/6935c593-bc18-8330-9de4-b94d2247f59e", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMhMRPCJGX6Vw8", "p": "p2", "t": "Dachziegel Spielzimmer nachsehen", "due": "2026-05-30", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 16.05.26: Von außen keine Beschädigung. Von innen Decke gereinigt — Flecken unklar.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "20m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQcVGq88XXff8", "p": "p4", "t": "Wohnzimmer Fernsehhänger", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMfWHvFq9mp7m8", "p": "p1", "t": "Reifen ins Auto laden — vor Edis-Termin am 19.05.", "due": "2026-05-18", "time": "", "deadline": "", "lb": ["Privat", "Telefon"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Auto hinbringen morgens + abholen nachmittags (+1h je einkalkulieren). ⚠️ Reifen vorher ins Auto laden.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMh8v4436hqhW8", "p": "p4", "t": "Claude Design für Präsentationen nutzen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcrwmVcC4vwpq68", "p": "p4", "t": "Wegen Protese zu Dr. Adam: Bonusheft mitnehmen", "due": "2026-05-26", "time": "", "deadline": "", "lb": ["Privat", "Sibel"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Bonusheft ist im obersten Fach. Letzte Einträge nachtragen lassen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMfWQPfMxHjwq8", "p": "p2", "t": "Keyhan: Arton Oberteil in 164 — auf Rückmeldung warten", "due": "2026-05-18", "time": "", "deadline": "", "lb": ["Keyhan", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMhQ4PCgVx4Frg", "p": "p4", "t": "o2 Retoure S26 — Eingang bei o2 abwarten", "due": "2026-05-20", "time": "", "deadline": "2026-05-22", "lb": ["Privat", "Telefon"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 15.05.2026: Paket abgegeben (Trinkhalle). Widerrufsfrist bis 27.05.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcwW7Gcg8MPj6q8", "p": "p4", "t": "Aus der Fußballgruppe: Amir und Edin fragen", "due": "2026-05-18", "time": "", "deadline": "", "lb": [], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Nächste Woche fragen ob sie dabei bleiben wollen, ansonsten rausschmeißen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcw9RWGg44f3R6g", "p": "p4", "t": "Training Keyhan mit Trikot der Wahl privat", "due": "2026-05-19", "time": "", "deadline": "", "lb": ["Keyhan", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gf3vhRwhg946v57", "p": "p2", "t": "Jabra Speak2 40 — Teams-Einstellungen prüfen (Echo/Rückkopplung)", "due": "2026-05-31", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 16.05.26: Alle Einstellungen gesetzt. Testanruf noch ausstehend.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gf5qW9V8h43C9G8", "p": "p4", "t": "Schule Keyhan — Level 3 Mathe, Antwort abwarten", "due": "2026-05-18", "time": "", "deadline": "", "lb": ["Keyhan", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 13.05.2026: Mail an Frau Meding, Haak und Vicente. Warten auf Rückmeldung.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gf8rg9pcm3q9m2f", "p": "p1", "t": "Keyhan Ecke wieso Schimmel", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Regen", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Befund 15.05.2026: Innen kleiner Schimmel Deckenecke. Außen nasse Stelle am Fallrohr. Bei Regen Fallrohr prüfen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gf8vfx9Jg3PJ238", "p": "p4", "t": "Terrasse sauber machen?", "due": "2026-05-20", "time": "", "deadline": "", "lb": ["Sibel"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfCwFG3HXv6RXg8", "p": "p4", "t": "Figma anschauen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "30m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfJ9VqvxXpG2M5g", "p": "p2", "t": "Terrasse Ecke Silikon ausbessern — Material bestellt, Lieferung 18./20. Mai", "due": "2026-05-24", "time": "", "deadline": "", "lb": ["Privat", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Material: Sikaflex bestellt. Hinterfüllschnur auch. 17.05.26 — Mit Sibel Farbe abgeklärt. Lieferung 18.+20–21.Mai. Erst nächstes Wochenende umsetzbar.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "1h", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfV6vV9R6h7QmF8", "p": "p4", "t": "Zahnreinigung — auf Erstattung von Ergo warten", "due": "2026-05-20", "time": "", "deadline": "", "lb": [], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 15.05.2026: Rechnung eingereicht. Warten auf Geldeingang.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfHHMxff2vxqHpg", "p": "p1", "t": "Unterlagen zum Scannen einpacken — morgens erledigen, im Kleiderschrank", "due": "2026-05-18", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Für die Arbeit, sind gerade im Kleiderschrank.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfVv6gVW9W8pwcf", "p": "p1", "t": "Mustafa kommt Fenster einbauen", "due": "2026-05-20", "time": "", "deadline": "", "lb": ["Privat"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 15.05.2026: Kommt nächsten Samstag 23.05.2026.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfXJ9mXGcwcrrh7", "p": "p4", "t": "Keyhan Einlagen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Privat", "Sibel", "Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 16.05.26: Fußballschuhe ✅. Straßenschuhe noch ausstehend.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp5W4345QWPw6f", "p": "p2", "t": "Jacken und Schuhe ausdünnen — Garderobe + Schuhschrank sortieren", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 16.05.26: Garderobe vollgestopft. Schuhschrank überlädt.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp5W5GQ62Hqx97", "p": "p2", "t": "Akkus + Ladegerät Rasenmäher in Garage einräumen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Zuhause"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Stand 16.05.26: Akku-Ladegerät + 2 blaue Akkus liegen lose auf dem Boden.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp8vH6VrXc4P77", "p": "p1", "t": "Montageschaum kaufen", "due": "2026-05-18", "time": "", "deadline": "2026-05-21", "lb": ["Baumarkt"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp99VhHm3F2gG7", "p": "p4", "t": "Einkauf Ikea — Boxen für Kleidung holen", "due": "", "time": "", "deadline": "", "lb": ["Ikea"], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfpGV39c58C6GH7", "p": "p2", "t": "Whisper/Audio-Transkription für Privat evaluieren", "due": "2026-05-22", "time": "", "deadline": "", "lb": [], "pr": "🏠 Privat", "projectPath": "🏠 Privat", "rootDirect": true, "d": "Optionen: Lokal mit Whisper, Codex CLI, Meeting-Zusammenfassungen.\nHinweis: Whisper kann halluzinieren.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMV3CW3m9jPcMC", "p": "p3", "t": "Vertikutieren", "due": "2026-05-20", "time": "", "deadline": "", "lb": ["Zuhause"], "pr": "Garten", "projectPath": "🏠 Privat / Garten", "rootDirect": false, "d": "Dauer ca. 3 Stunden", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "3h", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp36cRHJ8cvF8C", "p": "p3", "t": "Unkraut jäten — alle Bereiche hinten", "due": "", "time": "", "deadline": "", "lb": ["Gutes-Wetter", "Zuhause"], "pr": "Garten", "projectPath": "🏠 Privat / Garten", "rootDirect": false, "d": "Stand 16.05.26: Starkes Unkraut in drei Bereichen. Geschätzte Zeit: 1h 45 Min", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "1h45m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp36hJxwvxcfwC", "p": "p3", "t": "Bereich neben Schuppen freiräumen", "due": "", "time": "", "deadline": "", "lb": ["Gutes-Wetter", "Zuhause"], "pr": "Garten", "projectPath": "🏠 Privat / Garten", "rootDirect": false, "d": "Stand 16.05.26: Bereich zugewachsen. Geschätzte Zeit: 20 Min", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "20m", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfp36pwW5MCv95j", "p": "p2", "t": "Entsorgung Recyclinghof — MDF-Platten, Leisten, Düngerstreuer", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Recyclinghof", "Zuhause"], "pr": "Garten", "projectPath": "🏠 Privat / Garten", "rootDirect": false, "d": "Stand 16.05.26: MDF-Platten + Leisten vor Gartentor. Düngerstreuer neben Schuppen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMX6phGxG4hf3R", "p": "p4", "t": "Steuer lbv", "due": "2026-05-31", "time": "", "deadline": "", "lb": [], "pr": "Steuer", "projectPath": "🏠 Privat / Steuer", "rootDirect": false, "d": "Steuererklärung fertig und übermittelt. Warten auf Geldeingang des Finanzamts.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfqhGVJWpcX7m88", "p": "p2", "t": "Auf Regal-Lieferung warten", "due": "2026-05-20", "time": "", "deadline": "", "lb": [], "pr": "Garage", "projectPath": "🏠 Privat / Garage", "rootDirect": false, "d": "Steckregal mit Metallboden bestellt — für Euro-Boxen.", "notes": [], "noteCount": 0, "header": false, "wait": true, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfqhGcFhcvhCWm8", "p": "p2", "t": "Regal aufbauen — mit Sibel", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Sibel", "Zuhause"], "pr": "Garage", "projectPath": "🏠 Privat / Garage", "rootDirect": false, "d": "Sobald Lieferung da. Mit Sibel zusammen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfqhGgVJ7RJqqQ8", "p": "p2", "t": "Lochwand-Schienen kaufen — für Sichtboxen-Aufhängung", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Baumarkt"], "pr": "Garage", "projectPath": "🏠 Privat / Garage", "rootDirect": false, "d": "Metallschienen kaufen um Sichtboxen und Haken aufzuhängen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfqhGhRgQpmX3Pg", "p": "p3", "t": "Garage einräumen + organisieren", "due": "2026-05-23", "time": "", "deadline": "", "lb": ["Zuhause"], "pr": "Garage", "projectPath": "🏠 Privat / Garage", "rootDirect": false, "d": "Alles sauber einräumen sobald Regal steht.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfqhGj86hrRRgV8", "p": "p3", "t": "Garage 10 Min aufräumen", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Zuhause"], "pr": "Garage", "projectPath": "🏠 Privat / Garage", "rootDirect": false, "d": "Tägliche 10 Min Garage-Session bis Projekt abgeschlossen.", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": true, "updated_at": "", "added_at": ""}, {"id": "6gcMcWg7fVQRXqg3", "p": "p4", "t": "Vegovi", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Steuer abla", "projectPath": "🏠 Privat / Steuer abla", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMcWjGw9HqWw7V", "p": "p4", "t": "Pflegegeld Mama", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Steuer abla", "projectPath": "🏠 Privat / Steuer abla", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMcWm3V7635FjV", "p": "p4", "t": "Ordner 2024 auf OneDrive anlegen", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Steuer abla", "projectPath": "🏠 Privat / Steuer abla", "rootDirect": false, "d": "https://chatgpt.com/c/69aaa658-5634-8384-9053-1e2e9afb74fe", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMRX84XWjh3Ghg", "p": "p4", "t": "Steuer bis 2024 auf OneDrive ablegen", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Steuer abla", "projectPath": "🏠 Privat / Steuer abla", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcP9FF5cxH6MRhQ", "p": "p4", "t": "Mailpflege abgeschlossen — alle Mails umgestellt", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Mailpflege", "projectPath": "🏠 Privat / Mailpflege", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcP9FFhwQxcmVXx", "p": "p4", "t": "1&1 E-Mails ansehen und umstellen", "due": "2026-05-17", "time": "", "deadline": "", "lb": [], "pr": "Mailpflege", "projectPath": "🏠 Privat / Mailpflege", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": true, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMQcc8wpWjqRX8", "p": "p3", "t": "Google Drive organisieren", "due": "2026-05-17", "time": "", "deadline": "", "lb": ["Anywhere", "Privat"], "pr": "Google Drive", "projectPath": "🏠 Privat / Google Drive", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "1h", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfGx2Fwf8jr2FpF", "p": "p4", "t": "Google Drive Status Quo aufnehmen — Ordnerstruktur dokumentieren", "due": "2026-05-19", "time": "", "deadline": "", "lb": [], "pr": "Google Drive", "projectPath": "🏠 Privat / Google Drive", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfGx2PWJ5hpR95m", "p": "p4", "t": "* Kontext — Google Drive Organisation", "due": "", "time": "", "deadline": "", "lb": [], "pr": "Google Drive", "projectPath": "🏠 Privat / Google Drive", "rootDirect": false, "d": "Ziel: Google Drive strukturieren und langfristig wartbar machen.\nOCR für eingehende Dokumente einrichten.\nAutomatische Dateibenamung via OCR / Texterkennung.", "notes": [], "noteCount": 0, "header": true, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gfGx2cfQV7gXmQm", "p": "p4", "t": "Neue Struktur besprechen — eigenen Chat aufbauen", "due": "2026-05-19", "time": "", "deadline": "", "lb": [], "pr": "Google Drive", "projectPath": "🏠 Privat / Google Drive", "rootDirect": false, "d": "", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}, {"id": "6gcMhWMJXhmPg3h8", "p": "p2", "t": "Chatverlauf mit allen Einzelheiten", "due": "2026-05-26", "time": "", "deadline": "", "lb": ["Sibel"], "pr": "Sibel Brustverkl.", "projectPath": "🏠 Privat / Sibel Brustverkl.", "rootDirect": false, "d": "Thema: Rechtsanwalt und Brustverkleinerung (Sibel).\nhttps://chatgpt.com/c/683acb9c-e29c-800b-8b54-e10732d37a1d", "notes": [], "noteCount": 0, "header": false, "wait": false, "mail": false, "duration": "", "recurring": false, "updated_at": "", "added_at": ""}]</script>
+<script>
+'use strict';
+var SNAPSHOT_DATE = '2026-05-17';
+var STORE = 'privat-dashboard::changes::' + SNAPSHOT_DATE;
+var STORE_TASKS = 'privat-dashboard::tasks::' + SNAPSHOT_DATE;
+var TASKS = [];
+var changes = {};
+var filter = 'all';
+var query = '';
+var hideDone = false;
+
+function byId(id){ return document.getElementById(id); }
+function safeParse(text, fallback){ try { return JSON.parse(text); } catch(e) { return fallback; } }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g,function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+function linkHtml(url, label){ return '<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label || url)+'</a>'; }
+function nl2br(s) {
+  var raw = String(s == null ? '' : s);
+  var re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
+  var out = ''; var last = 0; var m;
+  while((m = re.exec(raw)) !== null){
+    out += esc(raw.slice(last, m.index));
+    if(m[1] && m[2]){ out += linkHtml(m[2], m[1]); }
+    else { var url = m[3] || ''; var trail = ''; while(/[.,;:!?)]$/.test(url)){ trail = url.slice(-1) + trail; url = url.slice(0, -1); } out += linkHtml(url, url) + esc(trail); }
+    last = re.lastIndex;
+  }
+  out += esc(raw.slice(last));
+  return out.replace(/\n/g, '<br>');
+}
+function copyText(txt, btn, label){
+  var fallback=function(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); flash(btn,label); };
+  try{ if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(txt).then(function(){ flash(btn,label); },fallback); } else { fallback(); } }catch(e){ fallback(); }
+}
+function flash(btn,label){ if(!btn)return; var old=btn.textContent; btn.textContent='✓'; btn.classList.add('okflash'); setTimeout(function(){btn.textContent=label||old; btn.classList.remove('okflash');},1200); }
+function setStatus(msg){ var s=byId('status'); s.textContent=msg||''; s.classList.toggle('on', !!msg); }
+
+function loadInitial(){
+  var embedded = safeParse(byId('tasks-json').textContent, []);
+  var stored = safeParse(localStorage.getItem(STORE_TASKS) || 'null', null);
+  TASKS = Array.isArray(stored) && stored.length ? stored : embedded;
+  changes = safeParse(localStorage.getItem(STORE) || '{}', {});
+}
+function saveTasks(){ localStorage.setItem(STORE_TASKS, JSON.stringify(TASKS)); }
+function saveChanges(){ localStorage.setItem(STORE, JSON.stringify(changes)); }
+function getTask(id){ return TASKS.find(function(t){ return t.id===id; }); }
+function isChanged(id){ return !!changes[id] && Object.keys(changes[id]).length>0; }
+function eff(t){
+  var c=changes[t.id] || {};
+  return { done:c.done===true, p:c.prio !== undefined ? c.prio : t.p, due:c.due !== undefined ? c.due : (t.due || ''), descAdd:c.descAdd || '' };
+}
+function cleanup(id){ if(changes[id] && Object.keys(changes[id]).length===0) delete changes[id]; }
+function setChange(id, field, value, original){
+  if(!changes[id]) changes[id] = {};
+  if(value === original || (value === '' && !original)){ delete changes[id][field]; cleanup(id); }
+  else { changes[id][field] = value; }
+  saveChanges(); updateStats();
+}
+function dueLabel(due){ if(!due) return 'kein Datum'; var s=String(due); var d=s.slice(0,10); var t=s.length>10?s.slice(11,16):''; var label=d===SNAPSHOT_DATE?'heute':d<SNAPSHOT_DATE?d+' ⚠':d; return t?label+' '+t:label; }
+function isOverdue(due){ if(!due) return false; return String(due).slice(0,10) < SNAPSHOT_DATE; }
+function isToday(due){ return due && String(due).slice(0,10) === SNAPSHOT_DATE; }
+function matches(t){
+  var e=eff(t);
+  if(hideDone && e.done) return false;
+  var text = [t.t,t.d,(t.lb||[]).join(' '),t.projectPath].join(' ').toLowerCase();
+  if(filter==='overdue' && !isOverdue(e.due)) return false;
+  if(filter==='today' && !isToday(e.due)) return false;
+  if(filter==='p1' && e.p!=='p1') return false;
+  if(filter==='p12' && !(e.p==='p1'||e.p==='p2')) return false;
+  if(filter==='wait' && !t.wait) return false;
+  if(filter==='zuhause' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='zuhause';})) return false;
+  if(filter==='walken' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='walken';})) return false;
+  if(filter==='sibel' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='sibel';})) return false;
+  if(filter==='keyhan' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='keyhan';})) return false;
+  if(filter==='baumarkt' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='baumarkt';})) return false;
+  if(filter==='anywhere' && !(t.lb||[]).some(function(l){return l.toLowerCase()==='anywhere';})) return false;
+  if(filter==='garage' && t.pr!=='Garage') return false;
+  if(filter==='garten' && t.pr!=='Garten') return false;
+  if(filter==='changed' && !isChanged(t.id)) return false;
+  if(query){ var hay=[t.t,t.id,t.pr,t.projectPath,t.d,(t.lb||[]).join(' '),e.descAdd].join(' ').toLowerCase(); if(hay.indexOf(query)<0) return false; }
+  return true;
+}
+function updateStats(){
+  var open=0, overdue=0, today=0, p1=0, changed=Object.keys(changes).length;
+  TASKS.forEach(function(t){ var e=eff(t); if(!e.done){ open++; if(isOverdue(e.due)) overdue++; if(isToday(e.due)) today++; if(e.p==='p1') p1++; } });
+  byId('st-open').textContent=open; byId('st-overdue').textContent=overdue; byId('st-today').textContent=today; byId('st-p1').textContent=p1; byId('st-changed').textContent=changed;
+}
+function render(){
+  var grid=byId('grid'); grid.innerHTML='';
+  var list=TASKS.filter(matches);
+  if(!list.length){ var empty=document.createElement('div'); empty.className='empty'; empty.textContent='Keine Tasks gefunden.'; grid.appendChild(empty); updateStats(); return; }
+  list.forEach(function(t){ grid.appendChild(card(t)); });
+  updateStats(); setStatus(list.length+' von '+TASKS.length+' Tasks sichtbar.');
+}
+function chip(text, cls){ var s=document.createElement('span'); s.className='chip '+(cls||''); s.textContent=text; return s; }
+function card(t){
+  var e=eff(t);
+  var c=document.createElement('article'); c.className='card '+e.p+(e.done?' done':'')+(isChanged(t.id)?' changed':''); c.id='card-'+t.id;
+  c.appendChild(Object.assign(document.createElement('div'),{className:'stripe'}));
+  var main=document.createElement('div'); main.className='card-main'; c.appendChild(main);
+  var row=document.createElement('div'); row.className='row'; main.appendChild(row);
+  var cb=document.createElement('input'); cb.type='checkbox'; cb.className='cb'; cb.checked=e.done; cb.addEventListener('change',function(){ actDone(t.id,cb.checked); }); row.appendChild(cb);
+  var pr=document.createElement('span'); pr.className='prio'; pr.textContent=(e.p||'').toUpperCase(); row.appendChild(pr);
+  var title=document.createElement('div'); title.className='title'; title.textContent=t.t; row.appendChild(title);
+  if(isChanged(t.id)){ var mk=document.createElement('span'); mk.className='mark'; mk.textContent='✏'; row.appendChild(mk); }
+  var chips=document.createElement('div'); chips.className='chips'; main.appendChild(chips);
+  chips.appendChild(chip(dueLabel(e.due), isOverdue(e.due)?'red':isToday(e.due)?'yellow':'blue'));
+  var projCls = t.rootDirect ? 'lime' : 'purple';
+  chips.appendChild(chip(t.projectPath||t.pr||'Privat', projCls));
+  (t.lb||[]).slice(0,4).forEach(function(l){ if(l!=='Privat') chips.appendChild(chip('@'+l,'muted')); });
+  if(t.wait) chips.appendChild(chip('Warten','yellow'));
+  if(t.deadline) chips.appendChild(chip('DL: '+t.deadline.slice(0,10),'red'));
+  if(t.duration) chips.appendChild(chip(t.duration,'muted'));
+  if(t.recurring) chips.appendChild(chip('täglich','muted'));
+  var idline=document.createElement('div'); idline.className='idline'; main.appendChild(idline);
+  var idbtn=document.createElement('button'); idbtn.className='mini'; idbtn.textContent='ID kopieren'; idbtn.addEventListener('click',function(){ copyText(t.id,idbtn,'ID kopieren'); }); idline.appendChild(idbtn);
+  var acts=document.createElement('div'); acts.className='actions'; main.appendChild(acts);
+  var detail=document.createElement('button'); detail.className='mini'; detail.textContent='Details'; detail.addEventListener('click',function(){ c.classList.toggle('open'); detail.textContent=c.classList.contains('open')?'Schließen':'Details'; }); acts.appendChild(detail);
+  c.appendChild(panelEl(t));
+  return c;
+}
+function panelEl(t){
+  var e=eff(t); var p=document.createElement('div'); p.className='panel';
+  var s1=document.createElement('div'); s1.className='section'; p.appendChild(s1);
+  var l1=document.createElement('div'); l1.className='label'; l1.textContent='Beschreibung / Kontext'; s1.appendChild(l1);
+  var d=document.createElement('div'); d.className='desc'; d.innerHTML=nl2br(t.d || 'Keine Beschreibung.'); s1.appendChild(d);
+  var s2=document.createElement('div'); s2.className='section'; p.appendChild(s2);
+  var l2=document.createElement('div'); l2.className='label'; l2.textContent='Fälligkeit / Priorität'; s2.appendChild(l2);
+  var er=document.createElement('div'); er.className='editrow'; s2.appendChild(er);
+  var due=document.createElement('input'); due.type='date'; due.className='field'; due.value=(e.due||'').slice(0,10); due.addEventListener('change',function(){ setChange(t.id,'due',due.value,t.due||''); render(); }); er.appendChild(due);
+  var sel=document.createElement('select'); sel.className='field'; ['p1','p2','p3','p4'].forEach(function(pp){ var o=document.createElement('option'); o.value=pp; o.textContent=pp.toUpperCase(); if(pp===e.p)o.selected=true; sel.appendChild(o); }); sel.addEventListener('change',function(){ setChange(t.id,'prio',sel.value,t.p); render(); }); er.appendChild(sel);
+  var s3=document.createElement('div'); s3.className='section'; p.appendChild(s3);
+  var l3=document.createElement('div'); l3.className='label'; l3.textContent='Notiz / Update vormerken'; s3.appendChild(l3);
+  var ta=document.createElement('textarea'); ta.className='textarea'; ta.value=e.descAdd||''; ta.placeholder='Beschreibung ergänzen oder aktualisieren…';
+  ta.addEventListener('input',function(){ setChange(t.id,'descAdd',ta.value.trim(),''); ta.classList.toggle('mod',!!ta.value.trim()); }); if(ta.value) ta.classList.add('mod'); s3.appendChild(ta);
+  return p;
+}
+function actDone(id, checked){ if(checked) setChange(id,'done',true,false); else { if(changes[id]){ delete changes[id].done; cleanup(id); saveChanges(); } } render(); }
+function buildSyncText(){
+  var lines=[];
+  Object.keys(changes).forEach(function(id){
+    var t=getTask(id); if(!t)return; var c=changes[id]; var sub=[];
+    if(c.done===true) sub.push('  → erledigen / abhaken');
+    if(c.due!==undefined && c.due!==(t.due||'')) sub.push('  → Fälligkeit: '+(c.due||'kein Datum')+' [vorher: '+(t.due||'—')+']');
+    if(c.prio!==undefined && c.prio!==t.p) sub.push('  → Priorität: '+String(c.prio).toUpperCase()+' [vorher: '+String(t.p).toUpperCase()+']');
+    if(c.descAdd) sub.push('  → Beschreibung ergänzen:\n    '+c.descAdd.replace(/\n/g,'\n    '));
+    if(sub.length){ lines.push('Task-ID '+id+' — '+t.t); lines=lines.concat(sub); lines.push(''); }
+  });
+  if(!lines.length) return 'Keine Änderungen vorgemerkt.';
+  return ['SYNC-PAKET — Privat Dashboard', 'Snapshot: 2026-05-17', '========================================', ''].concat(lines).join('\n');
+}
+function exportPayload(){ return {type:'privat-dashboard-export',snapshotDate:SNAPSHOT_DATE,exportedAt:new Date().toISOString(),tasks:TASKS,changes:changes}; }
+function showJson(){ byId('data-text').value=JSON.stringify(exportPayload(),null,2); }
+function downloadJson(){ var txt=JSON.stringify(exportPayload(),null,2); var blob=new Blob([txt],{type:'application/json'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='privat-dashboard-export-'+SNAPSHOT_DATE+'.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); byId('data-text').value=txt; }
+function convertTodoistSync(data){
+  var projects={};
+  data.projects.forEach(function(p){ projects[p.id]=p; });
+  // Privat-Hauptprojekt finden
+  var privatId=null;
+  data.projects.forEach(function(p){ if(p.name&&(p.name.indexOf('🏠')>=0||(p.name.toLowerCase()==='privat'&&!p.parent_id))) privatId=p.id; });
+  if(!privatId){ alert('Kein 🏠 Privat-Projekt gefunden.'); return null; }
+  // Alle Privat-Unterprojekte rekursiv sammeln
+  var privatIds=new Set();
+  function collectIds(pid){ privatIds.add(pid); data.projects.forEach(function(p){ if(p.parent_id===pid) collectIds(p.id); }); }
+  collectIds(privatId);
+  // Projektpfad berechnen
+  function projPath(pid){ var parts=[]; var guard=0; while(pid&&projects[pid]&&guard<10){ parts.unshift(projects[pid].name); pid=projects[pid].parent_id; guard++; } return parts; }
+  function prio(n){ n=Number(n||1); return 'p'+(5-n); }
+  var tasks=data.items.filter(function(t){ return !t.is_deleted && !t.checked && privatIds.has(t.project_id); });
+  return tasks.map(function(t){
+    var pp=projPath(t.project_id);
+    var proj=pp[pp.length-1]||'🏠 Privat';
+    var path=pp.join(' / ');
+    var root=(t.project_id===privatId);
+    var due=''; if(t.due&&t.due.date) due=String(t.due.date).slice(0,10);
+    var desc=t.description||'';
+    var lbs=t.labels||[];
+    var txt=(t.content+' '+desc+' '+lbs.join(' ')).toLowerCase();
+    return {
+      id:t.id, p:prio(t.priority), t:t.content, due:due,
+      deadline:t.deadline&&t.deadline.date?String(t.deadline.date).slice(0,10):'',
+      lb:lbs, pr:proj, projectPath:path, rootDirect:root, d:desc,
+      notes:[], noteCount:t.note_count||0,
+      header:t.content.startsWith('*')||t.content.startsWith('━'),
+      wait:/warten|abwarten|rückmeldung/.test(txt),
+      mail:/mail|antworten|nachfassen|ansprechen|einladen/.test(txt),
+      duration:'', recurring:!!(t.due&&t.due.is_recurring),
+    };
+  });
+}
+function doImport(){
+  var raw=byId('data-text').value.trim();
+  if(!raw){ alert('Kein JSON eingefügt.'); return; }
+  var data=safeParse(raw,null);
+  if(!data){ alert('Ungültiges JSON.'); return; }
+  var tasks=null;
+  if(Array.isArray(data.tasks)) tasks=data.tasks;
+  else if(Array.isArray(data.items)&&Array.isArray(data.projects)) tasks=convertTodoistSync(data);
+  else if(Array.isArray(data)) tasks=data;
+  if(!Array.isArray(tasks)||!tasks.length){ alert('Keine Privat-Tasks gefunden.'); return; }
+  TASKS=tasks; saveTasks(); changes={}; saveChanges();
+  byId('data-overlay').classList.remove('on');
+  filter='all'; setActiveFilter(); render();
+  alert(tasks.length+' Privat-Tasks importiert ✓');
+}
+function closeModal(id){ byId(id).classList.remove('on'); }
+function setActiveFilter(){ Array.from(document.querySelectorAll('[data-filter]')).forEach(function(b){ b.classList.toggle('active', b.dataset.filter===filter); }); }
+var STORE_TOKEN = 'privat-dashboard::token';
+function getToken(){ return localStorage.getItem(STORE_TOKEN)||''; }
+function log(msg){ var el=byId('refresh-log'); if(el) el.innerHTML+=msg+'<br>'; }
+
+function doRefresh(){
+  byId('refresh-log').innerHTML='';
+  byId('refresh-overlay').classList.add('on');
+  byId('refresh-dropzone').style.display='block';
+  byId('refresh-file').value='';
+  log('Schritt 1 — JSON exportieren:');
+  log('<a href="https://darekkay.com/todoist-export/" target="_blank" style="color:var(--accent)">→ darekkay.com/todoist-export/ öffnen</a>');
+  log('');
+  log('Schritt 2 — Datei hier ablegen oder auswählen:');
+}
+function loadRefreshFile(file){
+  var r=new FileReader();
+  r.onload=function(e){
+    var data=safeParse(e.target.result,null);
+    if(!data){ byId('refresh-log').innerHTML+='<br>❌ Ungültiges JSON.'; return; }
+    var tasks=null;
+    if(Array.isArray(data.items)&&Array.isArray(data.projects)) tasks=convertTodoistSync(data);
+    else if(Array.isArray(data.tasks)) tasks=data.tasks;
+    else if(Array.isArray(data)) tasks=data;
+    if(!tasks||!tasks.length){ byId('refresh-log').innerHTML+='<br>❌ Keine Privat-Tasks gefunden.'; return; }
+    TASKS=tasks; saveTasks(); changes={}; saveChanges();
+    filter='all'; setActiveFilter(); render();
+    log('✅ '+tasks.length+' Tasks geladen — '+new Date().toLocaleTimeString('de-DE'));
+    byId('refresh-close').textContent='Fertig ✓';
+    byId('refresh-dropzone').style.display='none';
+  };
+  r.readAsText(file);
+}
+
+function initToken(){
+  var inp=byId('token-input');
+  var status=byId('token-status');
+  var t=getToken();
+  if(t){ inp.value=t; status.textContent='✅ Token gespeichert ('+t.slice(0,8)+'…)'; status.style.color='var(--green)'; }
+  byId('token-save').addEventListener('click',function(){
+    var val=inp.value.trim();
+    if(!val){ status.textContent='⚠ Kein Token eingegeben.'; return; }
+    localStorage.setItem(STORE_TOKEN,val);
+    status.textContent='✅ Token gespeichert ('+val.slice(0,8)+'…)'; status.style.color='var(--green)';
+    setTimeout(function(){ byId('token-overlay').classList.remove('on'); },800);
+  });
+  byId('token-clear').addEventListener('click',function(){
+    localStorage.removeItem(STORE_TOKEN); inp.value='';
+    status.textContent='Token gelöscht.'; status.style.color='var(--muted)';
+  });
+}
+
+function initEvents(){
+  byId('refresh-btn').addEventListener('click',doRefresh);
+  byId('refresh-file') && byId('refresh-file').addEventListener('change',function(ev){ var f=ev.target.files&&ev.target.files[0]; if(f) loadRefreshFile(f); });
+  byId('token-btn').addEventListener('click',function(){ initToken(); byId('token-overlay').classList.add('on'); });
+  Array.from(document.querySelectorAll('[data-filter]')).forEach(function(b){ b.addEventListener('click',function(){ filter=b.dataset.filter; setActiveFilter(); render(); }); });
+  byId('hide-done').addEventListener('click',function(){ hideDone=!hideDone; byId('hide-done').classList.toggle('active',hideDone); render(); });
+  byId('search').addEventListener('input',function(){ query=byId('search').value.toLowerCase().trim(); render(); });
+  byId('sync-btn').addEventListener('click',function(){ byId('sync-text').value=buildSyncText(); byId('sync-overlay').classList.add('on'); });
+  byId('copy-sync').addEventListener('click',function(){ copyText(byId('sync-text').value,byId('copy-sync'),'Alles kopieren'); });
+  byId('data-btn').addEventListener('click',function(){ byId('data-text').value=''; byId('data-overlay').classList.add('on'); });
+  byId('show-json').addEventListener('click',showJson);
+  byId('download-json').addEventListener('click',downloadJson);
+  byId('import-json').addEventListener('click',doImport);
+  byId('file-import').addEventListener('change',function(ev){ var f=ev.target.files&&ev.target.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(e){ byId('data-text').value=e.target.result||''; }; r.readAsText(f); });
+  byId('reset-all').addEventListener('click',function(){ if(!confirm('Änderungen zurücksetzen?'))return; changes={}; saveChanges(); render(); });
+  Array.from(document.querySelectorAll('[data-close]')).forEach(function(b){ b.addEventListener('click',function(){ closeModal(b.dataset.close); }); });
+}
+function boot(){ loadInitial(); initEvents(); setActiveFilter(); render(); }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+
+// Login
+(function(){
+  var CREDS={user:'seyin',pass:'hkastandard'};
+  var STORE_AUTH='privat-dashboard::auth';
+  function showApp(){ byId('login-screen').style.display='none'; byId('app').style.display='block'; }
+  function tryLogin(){
+    var u=byId('login-user').value.trim();
+    var p=byId('login-pass').value;
+    if(u===CREDS.user && p===CREDS.pass){
+      sessionStorage.setItem(STORE_AUTH,'1');
+      showApp();
+    } else {
+      byId('login-err').textContent='Benutzername oder Passwort falsch.';
+    }
+  }
+  if(sessionStorage.getItem(STORE_AUTH)==='1'){ showApp(); return; }
+  byId('login-btn').addEventListener('click',tryLogin);
+  byId('login-pass').addEventListener('keydown',function(e){ if(e.key==='Enter') tryLogin(); });
+  byId('login-user').addEventListener('keydown',function(e){ if(e.key==='Enter') byId('login-pass').focus(); });
+})();
+</script>
+</body>
+</html>
